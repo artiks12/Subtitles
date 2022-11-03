@@ -1,11 +1,11 @@
 ﻿1
 00:00:54,096 --> 00:00:56,974
-<b>I only came here out of respect
-for my parents who...</b>
+<i><b>I only came here out of respect
+for my parents who...</b></i>
 
 2
 00:00:57,849 --> 00:01:00,018
-Knew your family.
+(Knew (your) family.)
 
 3
 00:01:00,102 --> 00:01:04,147
@@ -14,7 +14,8 @@ to my family.
 
 4
 00:01:07,609 --> 00:01:09,194
-♪ That was a long time ago. ♪
+♪ That was a long time ago1.
+That was a long time ago2. ♪
 
 5
 00:01:10,946 --> 00:01:11,946
