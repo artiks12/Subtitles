@@ -5,11 +5,11 @@ for my parents who...</b></i>
 
 2
 00:00:57,849 --> 00:01:00,018
-(Knew (your) family.)
+(Knew (your) family).
 
 3
 00:01:00,102 --> 00:01:04,147
-Your: father was more than just a friend
+SPEAKER: Your father was more than just a friend
 to my family.
 
 4
@@ -24,3 +24,18 @@ Yes.
 6
 00:00:56,306 --> 00:00:57,932
 BANNER: Saved it for what?
+
+7
+00:00:56,306 --> 00:00:57,932
+- First speaker
+on two lines.
+ROB: Second speaker on one line.
+
+8
+00:10:22,205 --> 00:10:24,124
+Let's just crawl into bed
+
+9
+00:10:24,207 --> 00:10:26,126
+and watch an old
+black and white movie on...

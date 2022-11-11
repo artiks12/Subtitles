@@ -1,54 +1,6 @@
-import srt 
-import re
-
-class Text:
-    def __init__(self, subtitle):
-        self.subtitle = subtitle
-    
-    def oneLine(self):
-        return self.subtitle.content.replace('\n',' ')
-
-    def getList(self):
-        temp = self.subtitle.content.replace('\n',r" (\n) ")
-        return temp.split(' ')
-    
-    def haveMultipleSpeakers(self):
-        if(self.subtitle.content.find('\n') != -1):
-            temp = self.subtitle.content.split('\n')
-            print(temp[1])
-            if(temp[0][0] == '-' and temp[1][0] == '-' ):
-                return True
-            return False
-    
-    def haveLabel(self):
-        temp = self.subtitle.content.split(' ')
-        if(temp[0][-1] == ':'):
-            return True
-        return False
-
-    def withoutLabel(self):
-        if(self.haveLabel() == True):
-            temp = self.subtitle.content.replace(self.getLabel()+' ','')
-            return temp
-
-    def getLabel(self) -> str:
-        if(self.haveLabel() == True):
-            temp = self.subtitle.content.split(' ')
-            return temp[0]
-
-    def sentenceDone(self):
-        if(self.subtitle.content[-1] != '.' or self.subtitle.content[-1] != '?' or self.subtitle.content[-1] != '!'):
-            return False
-        return True
-
-    def removeTags(self):
-        p = re.compile(r'<.*?>')
-        return p.sub('',self.subtitle.content)
-
-    def removeNotes(self):
-        p = re.compile(r'♪')
-        return p.sub('',self.subtitle.content)
-
+from Caption import Caption
+from Sentences import Sentences
+import srt
 
 
 f = open("sample.srt", encoding='utf-8-sig')
@@ -56,7 +8,38 @@ f = open("sample.srt", encoding='utf-8-sig')
 generator = srt.parse(f.read())
 
 subtitles = list(generator)
+captions = []
 
-t = Text(subtitles[3])
+stage1 = []
+stage1index = -1
+stage1unfinished = -1
+isMultiple = False
 
-print(t.getList())
+for s in subtitles:
+    t = Caption(s)
+    captions.append(t)
+    
+    if t.haveMultipleSpeakers() == 1:
+        isMultiple = False
+        if not(t.newSentence()):
+            stage1[stage1index].addCaption(t)
+        else:
+            stage1.append(Sentences(t))
+            stage1index+=1
+        if t.getsFinished():
+            stage1[stage1unfinished].addCaption(t)
+        if t.unfinished():
+            stage1unfinished = stage1index
+    else:
+        if isMultiple == False:
+            isMultiple = True
+            stage1.append(Sentences(t))
+            stage1index+=1
+        else:
+            stage1[stage1index].addCaption(t)
+
+        
+    
+for s in stage1:
+    print(s.printSentences())
+    print(s.printIndexes())
