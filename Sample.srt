@@ -9,8 +9,8 @@ for my parents who...</b></i>
 
 3
 00:01:00,102 --> 00:01:04,147
-SPEAKER: Your father was more than just a friend
-to my family.
+<b>SPEAKER: Your father was more than just a friend
+to my family.</b>
 
 4
 00:01:07,609 --> 00:01:09,194
@@ -32,10 +32,28 @@ on two lines.
 ROB: Second speaker on one line.
 
 8
+00:00:56,306 --> 00:00:57,932
+- Continuation of first speaker.
+ROB: Continuation of second speaker.
+
+8
+00:00:56,306 --> 00:00:57,932
+- Continuation of first speaker.
+ROB: End of second speaker.
+
+9
+00:10:22,205 --> 00:10:24,124
+Let's just crawl into bed...
+
+10
+00:10:22,205 --> 00:10:24,124
+Sentence.
+
+11
 00:10:22,205 --> 00:10:24,124
 Let's just crawl into bed
 
-9
+12
 00:10:24,207 --> 00:10:26,126
 and watch an old
 black and white movie on...
