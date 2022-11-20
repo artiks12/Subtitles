@@ -295,7 +295,9 @@ class Caption(srt.Subtitle):
         if id < self.hasMultipleSpeakers():
             text = '\n'.join(self.getAllSpeakers()[id])
             return Caption(text,self.index,self.start,self.end)
-            
+
+    def getSpeakerRow(self,id):
+        return self.__getSpeakerRows()[id]
     
 
 def getTime(self) -> float:

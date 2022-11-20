@@ -2,7 +2,6 @@ from Caption import Caption
 from Sentences import Sentences
 import srt
 
-
 f = open("sample.srt", encoding='utf-8-sig')
 
 generator = srt.parse(f.read())
@@ -13,7 +12,6 @@ captions = []
 
 stage1 = []
 stage1last = -1
-stage1index = -1
 stage1unfinished = -1
 isMultiple = False
 
@@ -46,7 +44,12 @@ for s in subtitles:
         else:
             stage1[stage1last].addCaption(t)
 
-        
-    
+
 for s in stage1:
-    print(s.getCaptionsFromMultipleSpeakers())
+   print(s.getSentences())
+                
+
+# for s in stage1[6].getListOfCaptions():
+#     for c in s:
+#         print(c.getStartRow())
+#         print(c.getCaptions())
