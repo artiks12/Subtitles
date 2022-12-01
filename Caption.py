@@ -435,22 +435,29 @@ class Caption(srt.Subtitle):
 
         return True
 
-    def geCharacterCountInRows(self):
+    def getOriginalWithoutTagsAndExtraSpaces(self):
         text = re.sub(r'<.*?>','',self.__original).split('\n')
+        temp = []
+        for row in text:
+            start = 0
+            end = -1
+            for i in range(len(row)):
+                if not(row[i] == ' '):
+                    start = i
+                    break
+            for i in reversed(range(len(row))):
+                if not(row[i] == ' '):
+                    end = i+1
+                    break
+            temp.append(row[start:end])
+        return '\n'.join(temp)
+
+
+    def geCharacterCountInRows(self):
+        text = self.getOriginalWithoutTagsAndExtraSpaces().split('\n')
         result = []
-        for elem in text:
-            start = True
-            whitespaces = 0
-            count = 0
-            for s in elem:
-                if not(s==' '):
-                    start = False
-                    count += 1 + whitespaces
-                    whitespaces = 0
-                else:
-                    if start == False:
-                        whitespaces += 1
-            result.append(count)
+        for row in text:
+            result.append(len(row))
         return result
 
     def getOriginal(self):

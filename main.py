@@ -147,6 +147,7 @@ for s in subtitles:
     t = Caption(s)
     captions.append(t)
     print(t.index)
+    print(t.getOriginalWithoutTagsAndExtraSpaces())
     print(t.geCharacterCountInRows())
 
     if t.hasMultipleSpeakers() == 1:
