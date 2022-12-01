@@ -6,33 +6,39 @@ f = open("Sample.srt", encoding='utf-8-sig')
 
 generator = srt.parse(f.read())
 
+f.close()
+
 subtitles = list(generator)
 captions = []
 
-multipleTemp = []
-stage1 = []
-stage1last = [-1]
-stage1unfinished = [-1]
-isMultiple = False
+multipleTemp = []           # Dictionary that stores information about multiple speakers. Will be insert in stage1 list.
+stage1 = []                 # List with combined captions
+stage1last = [-1]           # Last sentence checked
+stage1unfinished = [-1]     # Last unfinished sentence (ends with 3 dots)
+stage1Continue = [False]    # Checks if sentence continues.
+isMultiple = False          # Are we dealing with multiple speakers
 
+# Creates a list which keeps track of last used subtitle and last unfinished subtitle for all speakers
 def createStage1IndexesForMultipleSpeakers(count):
     global stage1last
     global stage1unfinished
+    global stage1Continue
 
     last = stage1last[0]
     unfinished = stage1unfinished[0]
+    Continue = stage1Continue[0]
     
     stage1last = []
     stage1unfinished = []
+    stage1Continue = []
 
     for i in range(count):
         stage1last.append(last)
         stage1unfinished.append(unfinished)
+        stage1Continue.append(Continue)
 
 
-
-
-
+# Main stage1 function for combining captions.
 def addToStage1(t,mode,speaker = 0):
     global multipleTemp
     global stage1
@@ -41,19 +47,25 @@ def addToStage1(t,mode,speaker = 0):
     global isMultiple
     global currentIndex
 
+    # If subcaption is from caption with multiple speakers 
     if mode > 1:
+        # Change to multiple speaker mode
         if isMultiple == False: 
             isMultiple = True
             createStage1IndexesForMultipleSpeakers(mode)
+        # Create multipleTemp dictionary.
         if speaker == 0:
             multipleTemp = {}
             for i in range(mode):
                 multipleTemp[i] = None
     
+    # If subcaption is from caption with multiple speakers and last checked caption is a caption with multiple speakers
     if mode > 1 and type(stage1[stage1last[speaker]]) == dict:
         if stage1[stage1last[speaker]][speaker].getLastCaption().getCaption() == t.getCaption():
             return None
 
+    # If caption has one speaker and if we were checking captions with multiople speakers.
+    # Set to single speaker mode and set last checked sentence and last unfinished sentence indexes correctly.
     if isMultiple == True and mode == 1:
         isMultiple = False
         for i in stage1last:
@@ -79,15 +91,19 @@ def addToStage1(t,mode,speaker = 0):
             if found:
                 break
 
-    
-    if t.newSentence():
+    last = stage1last[speaker]
+    unfinished = stage1unfinished[speaker]
+
+    # If caption begins with big letter.
+    if t.newSentence() and stage1Continue[speaker] == False:
         if mode == 1:
             stage1.append(Sentences(t,t.getLabel()))
             stage1last[speaker] = len(stage1)-1
         else:
             multipleTemp[speaker] = Sentences(t,t.getLabel())
             stage1last[speaker]+=1
-    elif t.contSentence():
+
+    elif t.contSentence() or stage1Continue[speaker] == True:
         if mode == 1:
             if (type(stage1[stage1last[speaker]]) == dict):
                 for i in stage1[stage1last[speaker]]:
@@ -98,7 +114,11 @@ def addToStage1(t,mode,speaker = 0):
             else:
                 stage1[stage1last[speaker]].addCaption(t)
         else:
-            stage1[stage1last[speaker]][speaker].addCaption(t)
+            if (type(stage1[stage1last[speaker]]) == dict):
+                stage1[stage1last[speaker]][speaker].addCaption(t)
+            else:
+                stage1[stage1last[speaker]].addCaption(t)     
+    
     else:
         if mode == 1:
             if (type(stage1[stage1unfinished[speaker]]) == dict):
@@ -110,14 +130,24 @@ def addToStage1(t,mode,speaker = 0):
             else:
                 stage1[stage1unfinished[speaker]].addCaption(t)
         else:
-            stage1[stage1unfinished[speaker]][speaker].addCaption(t)
+            if (type(stage1[stage1unfinished[speaker]]) == dict):
+                stage1[stage1unfinished[speaker]][speaker].addCaption(t)
+            else:
+                stage1[stage1unfinished[speaker]].addCaption(t)
+    
     if t.unfinishedSentence():
         stage1unfinished[speaker] = stage1last[speaker]
+    elif t.endsSentence():
+        stage1Continue[speaker] = False
+    else:
+        stage1Continue[speaker] = True
 
 
 for s in subtitles:
     t = Caption(s)
     captions.append(t)
+    print(t.index)
+    print(t.geCharacterCountInRows())
 
     if t.hasMultipleSpeakers() == 1:
         addToStage1(t,t.hasMultipleSpeakers())
@@ -125,6 +155,7 @@ for s in subtitles:
         for i in range(t.hasMultipleSpeakers()):
             newCaption = t.getCopyWithOneSpeaker(i)
             addToStage1(newCaption,t.hasMultipleSpeakers(),i)
+            # Sometimes one sentence in multiple speakers can appear in multiple captions or none of those captions have new sentence.
             if i+1 == t.hasMultipleSpeakers():
                 New = False
                 for i in multipleTemp.values():
@@ -134,4 +165,42 @@ for s in subtitles:
                     stage1.append(multipleTemp)
 
 
-print(stage1[-1].getTranslation())
+# for s in stage1:
+#     if type(s) == dict:
+#         for i in s.values():
+#             if not(i==None):
+#                 translations = i.getCaptionContentAfterTranslation()
+#                 for t in translations:
+#                     if not(captions[t[0]-1].translation == ''):
+#                         captions[t[0]-1].translation += '<br/>' + t[1] + ' '
+#                     else:
+#                         captions[t[0]-1].translation += t[1] + ' '
+#     else:
+#         translations = s.getCaptionContentAfterTranslation()
+#         for t in translations:
+#             captions[t[0]-1].translation += t[1] + ' '
+
+# # for c in captions:
+# #     print(c.index)
+# #     print(c.getCaption())
+# #     print(c.translation)
+
+# for index in range(len(captions)):
+#     text = captions[index].translation.replace('<br/> ','\n').replace('<br/>','\n')
+#     begin = 0
+#     for i in range(len(text)):
+#         if text[i] == ' ':
+#             begin += 1
+#         else:
+#             break
+#     subtitles[index].content = text[begin:]
+
+r = open('result.srt','w',encoding='utf-8-sig')
+r.write(srt.compose(subtitles))
+r.close()
+
+
+# print(captions[0].getWholeEnclosings())
+# print(captions[0].getTextWithinWholeEnclosings())
+# print(captions[1].getWholeEnclosings())
+# print(captions[1].getTextWithinWholeEnclosings())

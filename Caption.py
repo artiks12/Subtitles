@@ -8,31 +8,30 @@ closing={
 }
 
 tags={
-    '<f':'</font>',
-    '<b':'</b>',
-    '<i':'</i>',
-    '<u':'</u>'
+    '<fo':'</font>',
+    '<b>':'</b>',
+    '<i>':'</i>',
+    '<u>':'</u>'
 }
 
-specialClosingSymbols = ['♪','"']
+specialClosingSymbols = ['♪','"','#']
 
 class Caption(srt.Subtitle):
     # Constructor. Gets info on caption.
-    def __init__(self, *args) -> None:
-        if len(args) == 1:
-            self.__caption = self.__spaces(args[0])
-            self.index = args[0].index
-            self.start = args[0].start
-            self.end = args[0].end
+    def __init__(self, subtitle: srt.Subtitle, text = None) -> None:
+        self.index = subtitle.index
+        self.start = subtitle.start
+        self.end = subtitle.end
+        self.__original = subtitle.content
+        self.translation = ''
+        if text == None:
+            self.__caption = self.__spaces(subtitle.content)
         else:
-            self.__caption = args[0]
-            self.index = args[1]
-            self.start = args[2]
-            self.end = args[3]
+            self.__caption = text
 
     # Creates spaces around tags and brackets
-    def __spaces(self, subtitle):
-        result = self.__spacesForTags(subtitle.content)
+    def __spaces(self, content):
+        result = self.__spacesForTags(content)
         result = self.__spacesForBrackets(result)
         return result
 
@@ -67,7 +66,7 @@ class Caption(srt.Subtitle):
 
     # Checks if element is an opening tag
     def __isTagOpen(self, elem):
-        if re.match(r'<.*?>',elem) == None:
+        if re.match(r'<[^/].*?>',elem) == None:
             return False
         else:
             return True
@@ -87,9 +86,10 @@ class Caption(srt.Subtitle):
     def __getSpeakerRows(self):
         result = []
         row = 0
-        for l in self.getAllRowsAsListsWithoutSpecials():
-            if self.__isSpeakerIdentifier(l[0]):
-                result.append(row)
+        for l in self.getAllTextWithinEnclosingsRowsAsLists():
+            for e in l:
+                if self.__isSpeakerIdentifier(e):
+                    result.append(row)
             row+=1
         return result
 
@@ -108,7 +108,7 @@ class Caption(srt.Subtitle):
 
     # Get caption as a single row, where newline is shown with '(\\n)'
     def getAllRows(self) -> list:
-        return self.__caption.replace('\n',' (\\n) ')
+        return self.__caption.replace('\n',' <br/> ')
 
     # Get caption as list of rows
     def getAllRowsAsList(self) -> list:
@@ -121,41 +121,17 @@ class Caption(srt.Subtitle):
             result.append(row.split())
         return result
 
-    # Get all rows as lists of row elements seperated by element technical information
-    def getAllRowsAsListSeperated(self,lst) -> list:
-        if lst == 'getEverythingInEnclosing':
-            fun = self.getEverythingInEnclosing
-        if lst == 'getAllRowsAsList':
-            fun = self.getAllRowsAsList
-        tech = self.getTechnical(fun())
-        result = [fun(),fun(),fun(),fun(),fun(),fun(),fun(),tech]
-        for i in range(len(fun())):
-            index = -1
-            if tech[i] == 'bracket open' or tech[i] == 'bracket close':
-                index = 2
-            elif tech[i] == 'tag open' or tech[i] == 'tag close':
-                index = 5
-            elif tech[i] == 'label' or tech[i] == 'dash':
-                index = 4
-            elif tech[i] == 'special':
-                index = 3
-            elif tech[i] == 'newline' or tech[i] == 'newcaption':
-                index = 6 
-            else:
-                index = 1
-            for k in range(1,7):
-                if not(index == k):
-                    result[k][i] = ''
-        return result
-
     # Get all rows as lists of row elements without special symbols and tags
-    def getAllRowsAsListsWithoutSpecials(self):
+    def getAllTextWithinEnclosingsRowsAsLists(self):
         result = []
-        for row in self.getAllRowsAsLists():
-            rowTemp = []
-            for elem in row:
-                if not(self.__isSpecial(elem) or self.__isTag(elem)):
-                    rowTemp.append(elem)
+        rowTemp = []
+        for elem in self.getTextWithinWholeEnclosings():
+            if elem == '<br/>':
+                result.append(rowTemp)
+                rowTemp = []
+            else:
+                rowTemp.append(elem)
+        if not(rowTemp==[]):
             result.append(rowTemp)
         return result
 
@@ -181,7 +157,6 @@ class Caption(srt.Subtitle):
             result.append(rowTemp)
         return result
 
-    # Might be obsolete
     def __getAllSpeakersBase(self,lists):
         lst = self.__getSpeakerRows()
         if lst == []:
@@ -197,67 +172,16 @@ class Caption(srt.Subtitle):
             result.append(lists[i:end])
             count+=1
         return result
-
-    # Might be obsolete
+    
     def getAllSpeakers(self):
-        return self.__getAllSpeakersBase(self.__caption.split('\n'))
+        return self.__getAllSpeakersBase(self.getWholeCaptionWithoutWholeEnclosing().split('<br/>'))
 
-    # Might be obsolete
-    def getAllSpeakersAsLists(self):
-        return self.__getAllSpeakersBase(self.getAllRowsAsLists())
+    def getWholeCaptionWithoutWholeEnclosing(self):
+        text = self.getTextWithinWholeEnclosings()
+        joined = ' '.join(text)
+        return joined
 
-    # Might be obsolete
-    def getAllSpeakersAsListsWithoutSpecials(self):
-        return self.__getAllSpeakersBase(self.getAllRowsAsListsWithoutSpecials())
-
-    # Might be obsolete
-    def getAllSpeakersAsListsPure(self):
-        return self.__getAllSpeakersBase(self.getAllRowsAsListsPure())
-
-    # def getAllSpeakersAsListsWithoutSpeakerId(self):
-    #     return self.__getAllSpeakersBase(self.getAllRowsAsListsWithoutSpeakerId())
-
-    # Might be obsolete
-    def getSingleSpeaker(self,id):
-        temp = self.getAllSpeakers()
-        if id >= len(temp):
-            return None
-        return temp[id]
-
-    # Might be obsolete
-    def getSingleSpeakerAsLists(self,id):
-        temp = self.getAllSpeakersAsListsWithoutSpecials()[id]
-        if id >= len(temp):
-            return None
-        return temp[id]
-
-    # Might be obsolete
-    def getSingleSpeakerAsListsWithoutSpecials(self,id):
-        temp = self.getAllSpeakersAsListsWithoutSpecials()[id]
-        if id >= len(temp):
-            return None
-        return temp[id]
-
-    # Might be obsolete
-    def getSingleSpeakerAsListsBase(self,id):
-        temp = self.getAllSpeakersAsListsBase()[id]
-        if id >= len(temp):
-            return None
-        return temp[id]
-
-    # Might be obsolete
-    def getSentences(self):
-        result = []
-        speakers = self.getAllSpeakersAsListsPure()
-        for speaker in speakers:
-            line = []
-            for row in speaker:
-                line.extend(row)
-            temp = ' '.join(line)
-            temp = self.__fixBrackets(temp)
-            result.append(temp)
-        return result
-
+    
     # Checks if the caption starts a new sentence
     def newSentence(self):
         temp: list = self.getAllRowsAsListsPure()
@@ -271,6 +195,13 @@ class Caption(srt.Subtitle):
         if temp[0][0].islower() and not(self.finishedSentence()):
             return True
         return False
+
+    # Checks if the caption continues an unfinished caption
+    def finishedSentence(self):
+        temp: str = self.getAllRowsAsListsPure()
+        if (temp[0][0][0:3] == '...' or temp[0][0][0:2] == '..'):
+            return True
+        return False
     
     # Checks if the caption is unfinished
     def unfinishedSentence(self):
@@ -279,12 +210,18 @@ class Caption(srt.Subtitle):
             return True
         return False
 
-    # Checks if the caption continues an unfinished caption
-    def finishedSentence(self):
+    # Checks if the caption is unfinished
+    def endsSentence(self):
         temp: str = self.getAllRowsAsListsPure()
-        if (temp[0][0][0:3] == '...' or temp[0][0][0:2] == '..'):
+        if (temp[-1][-1][-1] == '.' and not(self.unfinishedSentence())) or temp[-1][-1][-1] == '!' or temp[-1][-1][-1] == '?':
             return True
+        if  temp[-1][-1][-1] == ')' or temp[-1][-1][-1] == '}' or temp[-1][-1][-1] == ']':
+            return self.bracketCount(temp)
         return False
+
+    # Checks if the caption continues in next caption
+    def toContSentence(self):
+        return not(self.unfinishedSentence() or self.endsSentence())
 
     # Check if caption has multiple speakers
     def hasMultipleSpeakers(self):
@@ -296,12 +233,22 @@ class Caption(srt.Subtitle):
     # Makes a copy of caption where only one speaker is taken
     def getCopyWithOneSpeaker(self,id):
         if id < self.hasMultipleSpeakers():
+            allRows = self.__getSpeakerRows()
+            start = allRows[id]
+            end = -1
+            if not(id+1 == len(allRows)):
+                end = allRows[id+1]
+            else:
+                end = len(allRows)+1
+            allText = self.__original.split('\n')
+            original = '\n'.join(allText[start:end])
             text = '\n'.join(self.getAllSpeakers()[id])
-            return Caption(text,self.index,self.start,self.end)
+            newCaption = srt.Subtitle(self.index,self.start,self.end,original)
+            return Caption(newCaption,text)
 
     # Gets the index of row, where the speaker begins
     def getSpeakerRow(self,id):
-        temp = self.__getSpeakerRows()
+        temp = self.____getSpeakerRows()
         if temp == []:
             return 0
         return temp[id]
@@ -315,43 +262,13 @@ class Caption(srt.Subtitle):
     def getCaption(self):
         return self.__caption
 
-    # def getTechnical(self,lst):
-    #     result = []
-    #     for row in lst:
-    #         rowTemp = []
-    #         for elem in row:
-    #             if elem in closing:
-    #                 rowTemp.append('bracket open')
-    #             elif elem in closing.values():
-    #                 rowTemp.append('bracket close')
-    #             elif self.__isTagOpen(elem):
-    #                 rowTemp.append('tag open')
-    #             elif self.__isTagClose(elem):
-    #                 rowTemp.append('tag close')
-    #             elif self.__isLabel(elem):
-    #                 rowTemp.append('label')
-    #             elif self.__isDash(elem):
-    #                 rowTemp.append('dash')
-    #             elif self.__isSpecial(elem):
-    #                 rowTemp.append('special')
-    #             else:
-    #                 rowTemp.append('word')
-    #         result.append(rowTemp)
-    #     return result
-
-    # def getTechnicalSpeakers(self,lst):
-    #     result = []
-    #     for speaker in lst:
-    #         result.append(self.getTechnical(speaker))
-    #     return result
-
     # Get technical information about caption elements
     def getTechnical(self,lst):
         temp = lst
         for i in range(len(temp)):
-            if temp[i] == '(\\n)':
+            if temp[i] == '<br/>':
                 temp[i] = 'newline'
-            elif temp[i] == '(\\c)':
+            elif temp[i] == '<hr/>':
                 temp[i] = 'newcaption'
             elif temp[i][0] in closing:
                 temp[i] = 'bracket open'
@@ -371,64 +288,186 @@ class Caption(srt.Subtitle):
                 temp[i] = 'word'
         return temp
 
-    # Get list of indexes with enclosing symbols that enclose the whole caption
-    def getEnclosing(self):
-        result = [[],[]]
+    def isSpecialDivider(self,symbol):
         temp = self.getAllRowsAsList()
-        start = 0
-        end = len(temp)-1
-        while start < end:
-            found = False
-            # Should speaker identifiers be ignored?
-            if self.__isSpeakerIdentifier(temp[start]):
-                start+=1
-                continue
+        count = 0
+        for t in temp:
+            if t == symbol:
+                count += 1
+        return count%2 == 0
 
-            # if temp[start] in closing or temp[start] in specialClosingSymbols or self.__isTag(temp[start]):
-            #     if temp[start] in closing and temp[end] == closing[temp[start]]:
-            #         found = True
-            #     if temp[start] in specialClosingSymbols and temp[end] == temp[start]:
-            #         found = True
-            #     if self.__isTag(temp[start]) and temp[end] == tags[temp[start][0:2]]:
-            #         found = True
+    def getEnclosings(self):
+        bracketBuffer={
+            '(':[],
+            '{':[],
+            '[':[]
+        }
+        specialBuffer={
+            '#':[],
+            '♪':[],
+            '"':[]
+        }
+        tagBuffer={
+            '<b>':[],
+            '<i>':[],
+            '<u>':[],
+            '<fo':[]
+        }
+        result = []
+        temp = self.getAllRowsAsList()
+        for i in range(len(temp)):
+            # # Special symbol that starts enclosing (brackets and specials)
+            # if temp[i] in bracketBuffer:
+            #     bracketBuffer[temp[i]].append([i])
+            if temp[i] in specialBuffer:
+                if len(specialBuffer[temp[i]]) == 0:
+                    specialBuffer[temp[i]].append([i])
+                elif len(specialBuffer[temp[i]][-1]) < 2:
+                    specialBuffer[temp[i]][-1].append(i)
+                    if len(specialBuffer[temp[i]][-1]) == 2:
+                        r = [specialBuffer[temp[i]][-1][0],specialBuffer[temp[i]][-1][1]]
+                        result.append(r)
+                else:
+                    specialBuffer[temp[i]].append([i])
 
-            if self.__isTag(temp[start]) and temp[end] == tags[temp[start][0:2]]:
-                found = True
+            # # Bracket ends enclosing
+            # elif temp[i] in closing.values():
+            #     key = list(closing.keys())[list(closing.values()).index(temp[i])]
+            #     
+            #     bracketBuffer['('][-1].append(i)
+            #     r = [bracketBuffer['('][-1][0],bracketBuffer['('][-1][1]]
+            #     result.append(r)
+            #     bracketBuffer['('].pop()
+
+            # Tag ends enclosing
+            if temp[i] in tags.values():
+                key = list(tags.keys())[list(tags.values()).index(temp[i])] # get key for tagBuffer
+
+                tagBuffer[key][-1].append(i)
+                r = [tagBuffer[key][-1][0],tagBuffer[key][-1][1]]
+                result.append(r)
+                tagBuffer[key].pop()
+                    
+
+            # Special symbol that starts enclosing (tags). First make sure string length is at least three.
+            elif len(temp[i]) > 2:
+                if temp[i][:3] in tagBuffer:
+                    tagBuffer[temp[i][:3]].append([i])
+        result.sort()
+        return result
+
+    def getWholeEnclosings(self):
+        temp = self.getEnclosings()
+        count = len(self.getAllRowsAsList())
+        result = []
+        for t in temp:
+            if t[0]+t[1] == count-1:
+                result.append(t)
+        return result
+
+    def getTextWithinWholeEnclosings(self):
+        temp = self.getAllRowsAsList()
+        enclosings = self.getWholeEnclosings()
+        if len(enclosings) == 0:
+            return temp
+        return temp[enclosings[-1][0]+1:enclosings[-1][1]]
+
+    def replaceUnfinished(self):
+        temp = self.getAllRowsAsList()
+        result = []
+        for i in temp:
+            if len(i) > 2:
+                if i[-3:] == '...':
+                    result.append(i[:-3])
+                    result.append('<img src="T"/>')
+                else:
+                    if i[:3] == '...':
+                        result.append('<img src="F"/>')
+                        result.append(i[3:])
+                    elif i[:2] == '..':
+                        result.append('<img src="F"/>')
+                        result.append(i[2:])
+                    else:
+                        result.append(i)
+            else:
+                result.append(i)
+        return result
+
+    def getWholeEnclosingContent(self):
+        temp = self.getWholeEnclosings()
+        text = self.getAllRowsAsList()
+        begin = []
+        end = []
+        for t in temp:
+            if text[t[0]] == '♪':
+                begin.append('# ')
+            else:
+                begin.append(text[t[0]])
+            if text[t[1]] == '♪':
+                end = [' #'] + end
+            else:
+                end = [text[t[1]]] + end
+        return [begin,end]
+
+    def bracketCount(self,lst):
+        bracketsBuffer = {
+            "(" : 0,
+            "{" : 0,
+            "[" : 0
+        }
+        for row in lst:
+            for elem in row:
+                if elem == '(':
+                    bracketsBuffer['('] += 1
+                elif elem == '{':
+                    bracketsBuffer['{'] += 1
+                elif elem == '[':
+                    bracketsBuffer['['] += 1
+                elif elem == ')':
+                    bracketsBuffer['('] -= 1
+                elif elem == '}':
+                    bracketsBuffer['{'] -= 1
+                elif elem == ']':
+                    bracketsBuffer['['] -= 1
+        for b in bracketsBuffer.values():
+            if not(b == 0):
+                return False
+
+        return True
+
+    def geCharacterCountInRows(self):
+        text = re.sub(r'<.*?>','',self.__original).split('\n')
+        result = []
+        for elem in text:
+            start = True
+            whitespaces = 0
+            count = 0
+            for s in elem:
+                if not(s==' '):
+                    start = False
+                    count += 1 + whitespaces
+                    whitespaces = 0
+                else:
+                    if start == False:
+                        whitespaces += 1
+            result.append(count)
+        return result
+
+    def getOriginal(self):
+        return self.__original
+
+
+
+
+
+
+        
+
+
                 
 
-            
-            if found == True:
-                result[0].append(start)
-                result[1].append(end)
-                start+=1
-                end-=1
-            else:
-                break
-
-        return result
 
 
-    def getEverythingInEnclosing(self):
-        enclosings = self.getEnclosing()
-        elements = self.getAllRowsAsList()
-        result = []
-        for i in range(len(elements)):
-            if not(i in enclosings[0] or i in enclosings[1]):
-                result.append(elements[i])
-        return result
-
-
-
-    # def __getPunctuation(self,text: str):
-    #     if text[-1] == '!' or text[-1] == '?' or (text[-1] == '.' and not(text[-3:] == '...')):
-    #         return 1
-    #     if text[-3:] == '...':
-    #         return 2
-    #     if text[0:3] == '...' or text[0:2] == '..':
-    #         return 3
-    #     if text[-1] == ',' or text[-1] == ';':
-    #         return 4
-    #     return 0    
 
                 
 
