@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Get combination of all captions within
 def getWholeSentences(self):
     result = []
@@ -171,3 +172,11 @@ def getWordWithoutPunctuation(self, text):
     # if text[-1] == '!' or text[-1] == '?' or (text[-1] == '.' and not(text[-3:] == '...')) or text[-1] == ',' or text[-1] == ';':
     #     return text[:-1]
     return text   
+=======
+import stanza
+
+nlp = stanza.Pipeline(lang='lv', processors='tokenize,pos,lemma,depparse')
+doc = nlp('Tavs tēvs bija ne tikai “draugs” manai ģimenei.')
+print(*[f'id: {word.id}\tword: {word.text}\thead id: {word.head}\thead: {sent.words[word.head-1].text if word.head > 0 else "root"}\tdeprel: {word.deprel}' for sent in doc.sentences for word in sent.words], sep='\n')
+
+>>>>>>> Stashed changes

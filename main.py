@@ -95,13 +95,23 @@ def addToStage1(t,mode,speaker = 0):
     unfinished = stage1unfinished[speaker]
 
     # If caption begins with big letter.
+<<<<<<< Updated upstream
     if t.newSentence() and stage1Continue[speaker] == False:
+=======
+    if (t.newSentence() and stage1Continue[speaker] == False) or t.isEffect():
+>>>>>>> Stashed changes
         if mode == 1:
             stage1.append(Sentences(t,t.getLabel()))
-            stage1last[speaker] = len(stage1)-1
+            if not(t.isEffect()):
+                stage1last[speaker] = len(stage1)-1
         else:
             multipleTemp[speaker] = Sentences(t,t.getLabel())
+<<<<<<< Updated upstream
             stage1last[speaker]+=1
+=======
+            if not(t.isEffect()):
+                stage1last[speaker]+=1
+>>>>>>> Stashed changes
 
     elif t.contSentence() or stage1Continue[speaker] == True:
         if mode == 1:
@@ -165,7 +175,62 @@ for s in subtitles:
                 if New:
                     stage1.append(multipleTemp)
 
+# for s in stage1:
+#     if type(s) == dict:
+#         for i in s.values():
+#             if not(i==None):
+#                 print(i.getIndexes())
+#                 # print(i.prepeareDataForTranslation())
+#                 # print(i.getTranslations())
+#                 print(i.getCaptionContentAfterTranslationSavingSentenceOrigins())
+#             else:
+#                 print('None')
+#     else:
+#         print(s.getIndexes())
+#         # print(s.prepeareDataForTranslation())
+#         # print(s.getTranslations())
+#         print(s.getCaptionContentAfterTranslationSavingSentenceOrigins())
 
+
+
+for s in stage1:
+    if type(s) == dict:
+        for i in s.values():
+            if not(i==None):
+                translations = i.getCaptionContentAfterTranslationSavingSentenceOrigins()
+                for t in translations:
+                    if captions[t[0]-1].translation == '':
+                        captions[t[0]-1].translation += t[1]
+                    else:
+                        captions[t[0]-1].translation += '\n' + t[1]
+                        
+    else:
+        translations = s.getCaptionContentAfterTranslationSavingSentenceOrigins()
+        for t in translations:
+            captions[t[0]-1].translation += t[1]
+
+# for c in captions:
+#     print(c.index)
+#     print(c.getCaption())
+#     print(c.translation)
+#     print(c.getTranslation())
+
+for index in range(len(captions)):
+    text = captions[index].getTranslation()
+    begin = 0
+    for i in range(len(text)):
+        if text[i] == ' ':
+            begin += 1
+        else:
+            break
+    subtitles[index].content = text[begin:]
+
+r = open('result.srt','w',encoding='utf-8-sig')
+r.write(srt.compose(subtitles))
+r.close()
+
+
+<<<<<<< Updated upstream
 # for s in stage1:
 #     if type(s) == dict:
 #         for i in s.values():
@@ -201,6 +266,8 @@ r.write(srt.compose(subtitles))
 r.close()
 
 
+=======
+>>>>>>> Stashed changes
 # print(captions[0].getWholeEnclosings())
 # print(captions[0].getTextWithinWholeEnclosings())
 # print(captions[1].getWholeEnclosings())

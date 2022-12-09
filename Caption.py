@@ -223,6 +223,12 @@ class Caption(srt.Subtitle):
     def toContSentence(self):
         return not(self.unfinishedSentence() or self.endsSentence())
 
+<<<<<<< Updated upstream
+=======
+    def isEffect(self):
+        return self.__original.isupper()
+
+>>>>>>> Stashed changes
     # Check if caption has multiple speakers
     def hasMultipleSpeakers(self):
         temp = self.__getSpeakerRows()
@@ -354,6 +360,7 @@ class Caption(srt.Subtitle):
                 if temp[i][:3] in tagBuffer:
                     tagBuffer[temp[i][:3]].append([i])
         result.sort()
+<<<<<<< Updated upstream
         return result
 
     def getWholeEnclosings(self):
@@ -473,8 +480,48 @@ class Caption(srt.Subtitle):
 
                 
 
+=======
+        return result
 
+    def getWholeEnclosings(self):
+        temp = self.getEnclosings()
+        count = len(self.getAllRowsAsList())
+        result = []
+        for t in temp:
+            if t[0]+t[1] == count-1:
+                result.append(t)
+        return result
 
+    def getTextWithinWholeEnclosings(self):
+        temp = self.getAllRowsAsList()
+        enclosings = self.getWholeEnclosings()
+        if len(enclosings) == 0:
+            return temp
+        return temp[enclosings[-1][0]+1:enclosings[-1][1]]
+>>>>>>> Stashed changes
+
+    def replaceUnfinished(self):
+        temp = self.getAllRowsAsList()
+        result = []
+        for i in temp:
+            if len(i) > 2:
+                if i[-3:] == '...':
+                    result.append(i[:-3])
+                    result.append('<img src="T"/>')
+                else:
+                    if i[:3] == '...':
+                        result.append('<img src="F"/>')
+                        result.append(i[3:])
+                    elif i[:2] == '..':
+                        result.append('<img src="F"/>')
+                        result.append(i[2:])
+                    else:
+                        result.append(i)
+            else:
+                result.append(i)
+        return result
+
+<<<<<<< Updated upstream
 
                 
 
@@ -515,19 +562,139 @@ def getWPM(self: srt.Subtitle):
     return wordCount/time
 
 
+=======
+    def getWholeEnclosingContent(self):
+        temp = self.getWholeEnclosings()
+        text = self.getAllRowsAsList()
+        begin = []
+        end = []
+        for t in temp:
+            if text[t[0]] == '♪':
+                begin.append('# ')
+            else:
+                begin.append(text[t[0]])
+            if text[t[1]] == '♪':
+                end = [' #'] + end
+            else:
+                end = [text[t[1]]] + end
+        return [begin,end]
+
+    def bracketCount(self,lst):
+        bracketsBuffer = {
+            "(" : 0,
+            "{" : 0,
+            "[" : 0
+        }
+        for row in lst:
+            for elem in row:
+                if elem == '(':
+                    bracketsBuffer['('] += 1
+                elif elem == '{':
+                    bracketsBuffer['{'] += 1
+                elif elem == '[':
+                    bracketsBuffer['['] += 1
+                elif elem == ')':
+                    bracketsBuffer['('] -= 1
+                elif elem == '}':
+                    bracketsBuffer['{'] -= 1
+                elif elem == ']':
+                    bracketsBuffer['['] -= 1
+        for b in bracketsBuffer.values():
+            if not(b == 0):
+                return False
+>>>>>>> Stashed changes
+
+        return True
+
+    def getOriginalWithoutTagsAndExtraSpaces(self):
+        text = re.sub(r'<.*?>','',self.__original).split('\n')
+        temp = []
+        for row in text:
+            start = 0
+            end = -1
+            for i in range(len(row)):
+                if not(row[i] == ' '):
+                    start = i
+                    break
+            for i in reversed(range(len(row))):
+                if not(row[i] == ' '):
+                    end = i+1
+                    break
+            temp.append(row[start:end])
+        return '\n'.join(temp)
 
 
-def withoutLabel(self):
-    if(self.haveLabel() == True):
-        temp = self.replace(self.getLabel()+' ','')
-        return temp
+    def getCharacterCountInRows(self):
+        text = self.getOriginalWithoutTagsAndExtraSpaces().split('\n')
+        result = []
+        for row in text:
+            result.append(len(row))
+        return result
 
-def getLabel(self) -> str:
-    if(self.haveLabel() == True):
-        temp = self.split(' ')
-        return temp[0]
+    def getCharacterCount(self):
+        return sum(self.getCharacterCountInRows())
 
-def sentenceDone(self):
-    if(not(self[-1] == '.') or not(self[-1] == '?') or not(self[-1] == '!')):
-        return False
-    return True
+    def getOriginal(self):
+        return self.__original
+
+    def getRowCount(self):
+        return len(self.__original.split('\n'))
+
+    def getWordCount(self,lst):
+        temp = self.getTechnical(lst)
+        words = filter(lambda tech: tech == 'word', temp)
+        return len(words)
+
+    def getTimeFromString(self,time) -> float:
+        timeSplit = str(time).replace(':','.').split('.')
+        hours = int(timeSplit[0])
+        minutes = int(timeSplit[1])
+        seconds = int(timeSplit[2])
+        miliseconds = int(timeSplit[3][0:3])
+
+        print(hours)
+        print(minutes)
+        print(seconds)
+        print(miliseconds)
+
+        return ((hours*60)+minutes+((seconds+(miliseconds/1000))/60))
+
+    def getTime(self):
+        start = self.getTimeFromString(self.start)
+        end = self.getTimeFromString(self.end)
+        return end-start
+
+    def getWPM(self):
+        time = self.getTime()
+        words = self.getWordCount()
+        return words/time
+
+    def getTranslation(self):
+        if self.hasMultipleSpeakers() == 1:
+            return self.translation
+        enclosings = self.getWholeEnclosingContent()
+        begin = ''
+        end = ''
+        lastTag = True
+        for e in enclosings[0]:
+            if lastTag:
+                begin += e
+            else:
+                begin += ' ' + e
+            if self.__isTag(e):
+                lastTag = True
+            else:
+                lastTag = False
+        for e in enclosings[1]:
+            if self.__isTag(e):
+                lastTag = True
+            else:
+                lastTag = False
+            if lastTag:
+                end += e
+            else:
+                end += e
+        return begin + self.translation + end
+            
+            
+
