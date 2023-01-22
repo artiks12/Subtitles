@@ -1,0 +1,18 @@
+﻿See.S03E08. Without Formating at 2023-01-18 21:49:14.145880
+See.S03E08. Without Formating at 2023-01-18 22:02:04.790014
+---------------
+Row evaluation: BLEU = 23.62 57.9/30.0/17.2/10.4 (BP = 1.000 ratio = 1.044 hyp_len = 3200 ref_len = 3064)
+Subtitle evaluation: BLEU = 28.13 60.6/34.1/21.2/14.3 (BP = 1.000 ratio = 1.045 hyp_len = 3203 ref_len = 3064)
+Sentences evaluation: BLEU = 29.20 61.1/35.1/22.4/15.2 (BP = 1.000 ratio = 1.045 hyp_len = 3203 ref_len = 3064)
+nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.3.1
+-----
+Row evaluation: chrF2++ = 50.64
+Subtitle evaluation: chrF2++ = 53.48
+Sentences evaluation: chrF2++ = 54.14
+nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.3.1
+-----
+Row evaluation: TER = 63.88
+Subtitle evaluation: TER = 59.19
+Sentences evaluation: TER = 58.55
+nrefs:1|case:lc|tok:tercom|norm:no|punct:yes|asian:no|version:2.3.1
+---------------

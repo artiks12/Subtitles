@@ -1,0 +1,14 @@
+﻿SubtitleIndex,OriginalWPM,OriginalCPM,OriginalRowCount,OriginalCharactersPerRow,TranslationWPM,TranslationCPM,TranslationRowCount,TranslationCharactersPerRow,isOriginalWPMGood,isOriginalCPSGood,isOriginalRowCountGood,isOriginalCharacterCountGood,isTranslationWPMGood,isTranslationCPSGood,isTranslationRowCountGood,isTranslationCharacterCountGood,isOriginalGoodWPM,isTranslationGoodWPM,isOriginalGoodCPS,isTranslationGoodCPS
+1,660.0,52.0,2,52,600.0,61.0,2,61,False,False,True,True,False,False,True,True,False,False,False,False
+2,180.0,20.0,1,20,180.0,30.0,1,30,True,False,True,True,False,False,True,True,True,False,False,False
+3,660.0,63.0,2,63,420.0,56.0,2,56,False,False,True,False,False,False,True,True,False,False,False,False
+4,720.0,56.0,2,56,480.0,40.0,2,40,False,False,True,True,False,False,True,True,False,False,False,False
+5,60.0,4.0,1,4,60.0,3.0,1,3,True,True,True,True,True,True,True,True,True,True,True,True
+6,240.0,26.0,1,26,240.0,37.0,2,37,False,False,True,True,False,False,True,True,False,False,False,False
+7,600.0,60.0,3,60,480.0,68.0,2,68,False,False,True,True,False,False,True,True,False,False,False,False
+8,480.0,68.0,2,68,360.0,61.0,2,61,False,False,True,True,False,False,True,True,False,False,False,False
+9,540.0,39.0,2,39,420.0,42.0,2,42,False,False,True,True,False,False,True,True,False,False,False,False
+10,120.0,10.0,1,10,60.0,8.0,1,8,True,True,True,True,True,True,True,True,True,True,True,True
+11,117.208,12.076,2,68,127.864,12.786,2,72,True,True,True,False,True,True,True,False,False,False,False,False
+12,138.801,13.039,2,62,126.183,12.618,2,60,True,True,True,True,True,True,True,True,True,True,True,True
+13,127.307,12.519,2,59,114.577,12.094,2,57,True,True,True,True,True,True,True,True,True,True,True,True

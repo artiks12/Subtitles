@@ -1,0 +1,18 @@
+﻿Shantaram.S01E01 With Formating at 2023-01-18 22:56:57.564194
+Shantaram.S01E01 With Formating at 2023-01-18 23:15:20.322227
+---------------
+Row evaluation: BLEU = 24.31 55.9/29.6/18.2/11.6 (BP = 1.000 ratio = 1.072 hyp_len = 4823 ref_len = 4500)
+Subtitle evaluation: BLEU = 26.35 57.2/31.4/20.2/13.3 (BP = 1.000 ratio = 1.070 hyp_len = 4814 ref_len = 4500)
+Sentences evaluation: BLEU = 27.00 57.6/31.9/20.7/14.0 (BP = 1.000 ratio = 1.077 hyp_len = 4846 ref_len = 4500)
+nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.3.1
+-----
+Row evaluation: chrF2++ = 48.98
+Subtitle evaluation: chrF2++ = 50.07
+Sentences evaluation: chrF2++ = 50.70
+nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.3.1
+-----
+Row evaluation: TER = 68.97
+Subtitle evaluation: TER = 66.64
+Sentences evaluation: TER = 65.95
+nrefs:1|case:lc|tok:tercom|norm:no|punct:yes|asian:no|version:2.3.1
+---------------

@@ -1,0 +1,18 @@
+﻿Echo.3.S01E04 Without Formating at 2023-01-18 21:24:33.226145
+Echo.3.S01E04 Without Formating at 2023-01-18 21:34:17.952115
+---------------
+Row evaluation: BLEU = 23.02 53.6/28.5/16.9/10.8 (BP = 1.000 ratio = 1.085 hyp_len = 2548 ref_len = 2349)
+Subtitle evaluation: BLEU = 28.03 57.1/33.3/21.7/15.0 (BP = 1.000 ratio = 1.076 hyp_len = 2527 ref_len = 2349)
+Sentences evaluation: BLEU = 28.30 57.4/33.8/22.1/15.0 (BP = 1.000 ratio = 1.076 hyp_len = 2528 ref_len = 2349)
+nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.3.1
+-----
+Row evaluation: chrF2++ = 47.10
+Subtitle evaluation: chrF2++ = 50.81
+Sentences evaluation: chrF2++ = 51.19
+nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.3.1
+-----
+Row evaluation: TER = 70.03
+Subtitle evaluation: TER = 63.47
+Sentences evaluation: TER = 63.24
+nrefs:1|case:lc|tok:tercom|norm:no|punct:yes|asian:no|version:2.3.1
+---------------
