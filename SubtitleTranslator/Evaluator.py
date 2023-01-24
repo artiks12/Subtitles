@@ -65,3 +65,16 @@ def getEvaluationData(captions,translations,subtitles,file,mode):
     temp = [str(round(originalGoodWPM/totalSubtitles,3)),str(round(originalGoodCPS/totalSubtitles,3)),str(round(originalGoodRowCount/totalSubtitles,3)),str(round(originalGoodCharacterCount/totalSubtitles,3)),str(round(translationGoodWPM/totalSubtitles,3)),str(round(translationGoodCPS/totalSubtitles,3)),str(round(translationGoodRowCount/totalSubtitles,3)),str(round(translationGoodCharacterCount/totalSubtitles,3)),str(round(originalGoodSubtitlesWPM/totalSubtitles,3)),str(round(translationGoodSubtitlesWPM/totalSubtitles,3)),str(round(originalGoodSubtitlesCPS/totalSubtitles,3)),str(round(translationGoodSubtitlesCPS/totalSubtitles,3))]
     e.write(','.join(temp))
     e.close()
+
+# Gets text to insert in subtitle files.
+def getSubtitleContentInFiles(translations,captions,subtitles):
+    for index in range(len(subtitles)):
+        captions[index].translation = translations[index]
+        text = captions[index].getTranslation()
+        begin = 0
+        for i in range(len(text)):
+            if text[i] == ' ':
+                begin += 1
+            else:
+                break
+        subtitles[index].content = text[begin:]
