@@ -33,7 +33,6 @@ class Sentences():
             if buffer[t] > 0:
                 return True
         return False
-            
 
     # Add caption that continues previous caption
     def addCaption(self,caption: Caption):
@@ -114,8 +113,15 @@ class Sentences():
             '#': False,
             '♪': False
         }
-        # Temporary result 
-        temp = [[],[],[],[],[],[]]
+        # Temporary result
+        sentence = {
+            "start":[],
+            "end":[],
+            "text":[],
+            "speakers":[],
+            "enclosings":[],
+            "unfinished":[],
+        }
         # Text within enclosings
         enclosing = {
             "(" : [],
@@ -133,7 +139,7 @@ class Sentences():
         indexRow = 0    # current row in captoion
         punctuation = []    # punctuations in last element
         word = 0    # current element
-        temp[0] = [self.getIndexes()[indexCaption],indexRow]
+        sentence["start"] = [self.getIndexes()[indexCaption],indexRow]
         for l in range(len(combined[0])):
             # Put next element in all enclosings
             for e in enclosing:
@@ -165,7 +171,7 @@ class Sentences():
                 bracket = []
                 for e in enclosing[key][-1]:
                     bracket.append(e)
-                temp[4].append(bracket)
+                sentence["enclosings"].append(bracket)
                 enclosing[key].pop()
             
             # Closing tag
@@ -182,13 +188,13 @@ class Sentences():
                     special = []
                     for e in enclosing[combined[0][l]]:
                         special.append(e)
-                    temp[4].append(special)
+                    sentence["enclosings"].append(special)
                     enclosing[combined[0][l]] = []
                     specialBuffer[combined[0][l]] = False
 
             # Speasker identifier
             if combined[1][l] == 'speaker':
-                temp[3].append([combined[0][l],self.__captions[indexCaption].index])  
+                sentence["speakers"].append([combined[0][l],self.__captions[indexCaption].index])
 
             # Text
             if combined[1][l] == 'word':
@@ -196,15 +202,15 @@ class Sentences():
                 if endOfSentence == True and self.checkBuffers(bracketsBuffer,tagsBuffer,specialBuffer):
                     if combined[0][l].islower() or 3 in punctuation:
                         last = result[unfinished]
-                        last[1] = []
-                        last[2].extend(temp[2])
-                        last[3].extend(temp[3])
-                        last[4].extend(temp[4])
-                        last[5].extend(temp[5])
+                        last["end"] = []
+                        last["text"].extend(sentence["text"])
+                        last["speakers"].extend(sentence["speakers"])
+                        last["enclosings"].extend(sentence["enclosings"])
+                        last["unfinished"].extend(sentence["unfinished"])
                         if combined[0][l].islower() and not(3 in punctuation):
-                            last[5][-1].append([self.__captions[indexCaption].index,indexRow,word+1])
-                        temp = last
-                        temp[2][threeDots] = self.getWordWithoutMultipoints(temp[2][threeDots])
+                            last["unfinished"][-1].append([self.__captions[indexCaption].index,indexRow,word+1])
+                        sentence = last
+                        sentence["text"][threeDots] = self.getWordWithoutMultipoints(sentence["text"][threeDots])
                         result.pop()
                     else:
                         word = 0
@@ -216,11 +222,12 @@ class Sentences():
                 if 1 in punctuation:
                     endOfSentence = True
                 if 3 in punctuation:
-                    temp[5][-1].append([self.__captions[indexCaption].index,indexRow,word])
+                    sentence["unfinished"]
+                    sentence["unfinished"][-1].append([self.__captions[indexCaption].index,indexRow,word])
                     threeDots = -1
                 if 2 in punctuation:
-                    temp[5].append([[self.__captions[indexCaption].index,indexRow,word]])
-                    threeDots = len(temp[2])
+                    sentence["unfinished"].append([[self.__captions[indexCaption].index,indexRow,word]])
+                    threeDots = len(sentence["text"])
                     endOfSentence = True
                 
             if combined[1][l] == 'newline':
@@ -233,37 +240,44 @@ class Sentences():
             if not(combined[1][l] == 'speaker'):
                 if combined[1][l] == 'newline':
                     if option == 1:
-                        temp[2].append(combined[0][l])
+                        sentence["text"].append(combined[0][l])
                 elif combined[1][l] == 'word':
                     if 3 in punctuation:
-                        temp[2].append(self.getWordWithoutMultipoints(combined[0][l],3))
+                        sentence["text"].append(self.getWordWithoutMultipoints(combined[0][l],3))
                     else:
-                        temp[2].append(combined[0][l])
+                        sentence["text"].append(combined[0][l])
                 else:
-                    temp[2].append(combined[0][l])
+                    sentence["text"].append(combined[0][l])
                 
 
-            if (endOfSentence == True and unfinished == -1) or ((combined[1][l] == 'tag close' or combined[1][l] == 'bracket close') and self.isBracket(temp[2][0])):
+            if (endOfSentence == True and unfinished == -1) or ((combined[1][l] == 'tag close' or combined[1][l] == 'bracket close') and self.isBracket(sentence["text"][0])):
                 nextSentence = self.checkBuffers(bracketsBuffer,tagsBuffer,specialBuffer)
                 if nextSentence == True:
-                    temp[1] = [self.getIndexes()[indexCaption],indexRow]
-                    result.append(temp)
+                    sentence["end"] = [self.getIndexes()[indexCaption],indexRow]
+                    result.append(sentence)
                     if not(threeDots == -1):
                         unfinished = len(result)-1
-                    temp = [[],[],[],[],[],[]]
-                    temp[0] = [self.getIndexes()[indexCaption],indexRow]
+                    sentence = {
+                        "start":[],
+                        "end":[],
+                        "text":[],
+                        "speakers":[],
+                        "enclosings":[],
+                        "unfinished":[],
+                    }
+                    sentence["start"] = [self.getIndexes()[indexCaption],indexRow]
                     if not(l == len(combined[0])-1):
                         if combined[1][l+1] == 'newline':
-                            temp[0][1] += 1
+                            sentence["start"][1] += 1
                         if combined[1][l+1] == 'newcaption':
-                            temp[0][0] = self.getIndexes()[indexCaption+1]
+                            sentence["start"][0] = self.getIndexes()[indexCaption+1]
                     if 1 in punctuation:
                         endOfSentence = False
                         word = 0
 
-            if l+1 == len(combined[0]) and not(temp[2] == []):
-                temp[1] = [self.getIndexes()[indexCaption],indexRow]
-                result.append(temp)
+            if l+1 == len(combined[0]) and not(sentence["text"] == []):
+                sentence["end"] = [self.getIndexes()[indexCaption],indexRow]
+                result.append(sentence)
 
         return result
 
@@ -292,20 +306,13 @@ class Sentences():
     # Prepares sentences for machine translating.
     def prepeareDataForTranslation(self):
         result = []
-        temp = self.getWholeSentences()
-        sentence = [[],[],[],[],[],[]]
-        for t in temp:
-            sentence[0] = t[0]
-            sentence[1] = t[1]
-            sentence[2] = self.getListOfSentences(t[2],t[0],t[1],t[5])
-            sentence[3] = t[3]
-            sentence[4] = t[4]
-            sentence[5] = t[5]
+        sentences = self.getWholeSentences()
+        for sentence in sentences:
+            sentence["text"] = self.getListOfSentences(sentence["text"],sentence["start"],sentence["end"],sentence["unfinished"])
             result.append(sentence)
-            sentence = [[],[],[],[],[],[]]
         return result
 
-    # Prepares sentences for machine translating.
+    # Get sentnece parts in different subtitles. Used later for dividing text in subtitles.
     def getListOfSentences(self,text,start,end,multiDots):
         indexes = self.getSpecificIndexes(start[0],end[0])
         captions = [[],[]]
@@ -365,6 +372,7 @@ class Sentences():
         captions[1] = ' '.join(captions[1])
         return captions
 
+    # Sends sentences to MT system
     def getTranslations(self):
         result = []
         temp = self.prepeareDataForTranslation()
@@ -374,60 +382,19 @@ class Sentences():
             result.append(translation)
         return result
 
-    def getCaptionContentAfterTranslationUsingTags(self):
-        temp = self.getTranslations()
-        indexes = self.getIndexes()
-        indexCurrent = 0
-        result = []
-        enclosings = self.__captions[indexCurrent].getWholeEnclosingContent()
-        caption = [indexes[indexCurrent],'']
-        if not(len(enclosings[0]) == 0):
-            caption[1] += ''.join(enclosings[0])
-
-        for t in temp:
-            fixed = t[2].replace('<img src="T"/>','...').replace('<img src="F"/> ','..').replace('<br/>.','.<br/>').replace('<br/>,',',<br/>')
-
-            brackets = re.findall(r'\([^\(\{\[]*\)|\[[^\(\{\[]*\]|\{[^\(\{\[]*\}',fixed) # Gets all bracket text
-            for b in range(len(brackets)):
-                fixed = fixed.replace(brackets[b],t[4][b], 1)
-            
-            text = fixed.split('<hr/>')
-
-            if len(text) > 1:
-                for c in range(len(text)):
-                    caption[1] += text[c]
-                    if not(c+1 == len(text)): 
-                        if not(len(enclosings[1]) == 0):
-                            caption[1] += ''.join(enclosings[1])
-                        result.append(caption)
-                        indexCurrent+=1
-                        caption = [indexes[indexCurrent],'']
-                        enclosings = self.__captions[indexCurrent].getWholeEnclosingContent()
-                        if not(len(enclosings[0]) == 0):
-                            caption[1] += ''.join(enclosings[0])
-            else:
-                caption[1] += text[0]
-        if not(caption == [[],[]]):
-            if not(len(enclosings[1]) == 0):
-                caption[1] += ''.join(enclosings[1])
-            result.append(caption)
-        return result
-
     # Prepares translated text for subtitles.
     def getCaptionContentAfterTranslationSavingSentenceOrigins(self,mode,translations):
-        # temp = self.getTranslations()
-        # print(temp)
         result = {}
         indexes = self.getIndexes()
         for i in indexes:
             result[i] = ''
 
         for t in translations:
-            captions = t[2][0]
-            text = t[2][1]
-            labels = t[3]
-            enclosings = t[4]
-            index = indexes.index(t[0][0])
+            captions = t["text"][0]
+            text = t["text"][1]
+            labels = t["speakers"]
+            enclosings = t["enclosings"]
+            index = indexes.index(t["start"][0])
 
             text = self.replaceTextInEnclosings(text,enclosings)
 
@@ -440,7 +407,7 @@ class Sentences():
                 proportion = len(text)/sum(partLengths)
                 newCaptionCharacters = list(map(lambda x: x*proportion, partLengths))
                 
-                partTexts = self.getCharactersForCaptions(newCaptionCharacters,text,indexes)
+                partTexts = self.getTextForCaptions(newCaptionCharacters,text,indexes)
 
                 unfinished = False
                 for p in range(len(partTexts)):
@@ -659,7 +626,7 @@ class Sentences():
                             extra = 0
         return rowCharacterCount
 
-    
+    # Puts whole enclosings in translated text.
     def wrapText(self,index,text):
         index = self.getSpecificIndex(index)
         caption = self.__captions[index]
@@ -706,8 +673,8 @@ class Sentences():
                 result.append(len(c))
         return result
 
-    # 
-    def getCharactersForCaptions(self,counts,text,indexes):
+    # Gets text for each caption
+    def getTextForCaptions(self,counts,text,indexes):
         index = 0
         temp = ''
         length = 0
@@ -867,5 +834,3 @@ class Sentences():
         sentencesWithoutEnclosings.append([startEnd,' '.join(capsWithoutEnclosings)])
 
         return (sentencesWithEnclosings,sentencesWithoutEnclosings)
-
-

@@ -15,11 +15,13 @@ def execute(file):
 
     (combined,captions) = combiner(subtitles)
 
-    # for s in combined:
-    #     print(s.getIndexes())
-    #     for c in s.getCaptions():
-    #         print(c.index)
-    #         print(c.getCaption())
+    for s in combined:
+        print(s.getIndexes())
+        print(s.getWholeSentences())
+        print(s.prepeareDataForTranslation())
+        for c in s.getCaptions():
+            print(c.index)
+            print(c.getCaption())
 
     translations = setTranslations(combined)
     translationDict = insertTranslations(combined,translations)

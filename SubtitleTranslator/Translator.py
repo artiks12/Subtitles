@@ -16,28 +16,35 @@ def fixText(text):
 # lst[1] - text ends in caption;row
 # lst[2] - text to translate
 def Translator(lst):
-    result = [[],[],[],[],[],[]]
-    result[0] = lst[0]
-    result[1] = lst[1]
+    result = {
+        "start":[],
+        "end":[],
+        "text":[],
+        "speakers":[],
+        "enclosings":[],
+        "unfinished":[],
+    }
+    result["start"] = lst["start"]
+    result["end"] = lst["end"]
     temp = []
-    for l in lst[2][0]:
+    for l in lst["text"][0]:
         temp.append(l.replace(' ..',' ').split('... '))
-    result[2].append(temp)
-    result[2].append(translate.translate(fixText(lst[2][1]))['translation'])
-    for label in lst[3]:
+    result["text"].append(temp)
+    result["text"].append(translate.translate(fixText(lst["text"][1]))['translation'])
+    for label in lst["speakers"]:
         if not(re.match(r"–+",label[0])) and not(re.match(r"-+",label[0])):
             text = label[0][0:-1]
             trans = translate.translate(text)['translation']
-            result[3].append([trans+':',label[1]])
+            result["speakers"].append([trans+':',label[1]])
         else:
-            result[3].append([label[0],label[1]])
-    for enclosings in lst[4]:
+            result["speakers"].append([label[0],label[1]])
+    for enclosings in lst["enclosings"]:
         enc = enclosings[0]
         text = ' '.join(enclosings[1:-1])
         trans = translate.translate(text)['translation']
         enc += trans + enclosings[-1]
-        result[4].append(enc)
-    result[5] = lst[5]
+        result["enclosings"].append(enc)
+    result["unfinished"] = lst["unfinished"]
     return result
         
 # def setTranslations(combined,captions,mode):
