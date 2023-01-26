@@ -1,6 +1,6 @@
 # Subtitles
 
-<p>This is a program writen in python that translates SRT format subtitles. The program was created as part of course work.</p>
+<p>This is a program writen in python that translates SRT format subtitles. The program was created as part of university course work and seminar work.</p>
 
 # Used packages
 <ul>
@@ -9,6 +9,9 @@
 </li>
 <li>
 <a href="https://github.com/tilde-nlp/mt-api-python-demo">tilde MT API</a> - library that allows the use of tilde MT in solutiuon. Requires client_id.
+</li>
+<li>
+<a href="https://pypi.org/project/sacrebleu/">sacreBLEU</a> - used for MT system evaluation.
 </li>
 </ul>
 
@@ -104,7 +107,7 @@ Translator.py - Stores the code that sends text to tilde MT system.
 <p>CheckWholeSentences.py - Stores the code that checks if Test data in "MT_Test_Data/Segmentated" folder where subtitles are combined in sentences has equal amount of sentences in both languages and if their row ids match.</p>
 <p>MT_Evaluation.py - Stores the code that does MT evaluation and aquires scores stored in "MT_Evaluation" folder</p>
 
-# Using the translatior
+# Using the translator
 ## With command prompt
 <ul>
 <li>
