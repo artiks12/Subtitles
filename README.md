@@ -1,6 +1,6 @@
 # Subtitles
 
-<p>This is a program writen in python that translates SRT format subtitles. The program was created as part of course work.</p>
+<p>This is a program writen in python that translates SRT format subtitles. The program was created as part of university course work and seminar work.</p>
 
 # Used packages
 <ul>
