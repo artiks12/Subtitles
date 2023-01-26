@@ -62,7 +62,7 @@ def segmentation(EN,LV,offsetLV = 0):
 
 # segmentation(sys.argv[1],sys.argv[2],int(sys.argv[3]))
 
-# segmentation('Shantaram.S01E01_EN','Shantaram.S01E01_LV',43)
-# segmentation('Bad.Sisters.S01E09_EN','Bad.Sisters.S01E09_LV',43)
-# segmentation('Echo.3.S01E04_EN','Echo.3.S01E04_LV',43)
-# segmentation('See.S03E08._EN','See.S03E08._LV',43)
+segmentation('Shantaram.S01E01_EN','Shantaram.S01E01_LV',43)
+segmentation('Bad.Sisters.S01E09_EN','Bad.Sisters.S01E09_LV',43)
+segmentation('Echo.3.S01E04_EN','Echo.3.S01E04_LV',43)
+segmentation('See.S03E08._EN','See.S03E08._LV',43)

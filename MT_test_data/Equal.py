@@ -134,17 +134,14 @@ def equalSpeakers(filename):
     for r in result:
         print(r)
 
-# equalRows('Bad.Sisters.S01E09')
-# equalSpeakers('Bad.Sisters.S01E09')
+equalRows('Bad.Sisters.S01E09')
+equalSpeakers('Bad.Sisters.S01E09')
 
-# equalRows('Echo.3.S01E04')
-# equalSpeakers('Echo.3.S01E04')
+equalRows('Echo.3.S01E04')
+equalSpeakers('Echo.3.S01E04')
 
-# equalRows('See.S03E08.')
-# equalSpeakers('See.S03E08.')
+equalRows('See.S03E08.')
+equalSpeakers('See.S03E08.')
 
-# equalRows('Shantaram.S01E01')
-# equalSpeakers('Shantaram.S01E01')
-
-# equalRows('Wednesday.S01E03')
-# equalSpeakers('Wednesday.S01E03')
+equalRows('Shantaram.S01E01')
+equalSpeakers('Shantaram.S01E01')
