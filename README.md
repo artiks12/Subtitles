@@ -104,7 +104,7 @@ Translator.py - Stores the code that sends text to tilde MT system.
 <p>CheckWholeSentences.py - Stores the code that checks if Test data in "MT_Test_Data/Segmentated" folder where subtitles are combined in sentences has equal amount of sentences in both languages and if their row ids match.</p>
 <p>MT_Evaluation.py - Stores the code that does MT evaluation and aquires scores stored in "MT_Evaluation" folder</p>
 
-# Using the translatior
+# Using the translator
 ## With command prompt
 <ul>
 <li>
