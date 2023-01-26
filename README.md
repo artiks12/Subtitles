@@ -105,7 +105,7 @@ Translator.py - Stores the code that sends text to tilde MT system.
 <p>MT_Evaluation.py - Stores the code that does MT evaluation and aquires scores stored in "MT_Evaluation" folder</p>
 
 # Using the translatior
-<p>With command prompt</p>
+## With command prompt
 <ul>
 <li>
 Run the following script in "SubtitleTranslator" folder:
@@ -120,9 +120,29 @@ where filename is the name of the file wihtout extension.
 <li>Translations will be saved in "SubtitleTranslator/Results" folder.</li>
 </ul>
 
-<p>With VS code</p>
+## With VS code
 <ol>
 <li>in "SubtitleTranslator/main.py" comment out "execute(sys.argv[1])" in line 39 and insert following: execute(filename) where filename is the name of the file wihtout extension.</li>
 <li>Make sure that the file is located in "SubtitleTranslator/Subtitles" folder.</li>
 <li>Click "Run python file" for file main.py in root folder. Translations will be saved in "Results" folder.</li>
 </ol>
+
+# Getting evaluation data
+## For subtitle guideline evaluation.
+<ol>
+<li>in "SubtitleTranslator/main.py" comment out "execute(sys.argv[1])" in line 39 as well as lines 12 and 33 and remove comments in the same file from lines 14, 30 and 40 through 43</li>
+<li>Click "Run python file" for file main.py in root folder with VS code.</li>
+<li>Evaluation data will be saved in "BBC_Evaluation" folder (see file structure).</li>
+</ol>
+
+## For MT translations
+<p>Click "Run python file" for file MT_Evaluation.py in root folder with VS code. Evaluation data will be saved in "MT_Evaluation" folder (see file structure).</p>
+
+## Preparing test data for MT evaluation
+<p>Put subtitle files in "MT_test_data/Original" folder and click "Run python file" for all listed python files in given order:</p>
+<ol>
+<li>Validation.py</li>
+<li>Segmentation.py</li>
+<li>Second.py</li>
+</ol>
+<p>Run the equal.py program the same way to check whether reference and hypotheses have equal amount of data and whether it is correct. If any of the test cases print out the number 0 then test data is correct.</p>
