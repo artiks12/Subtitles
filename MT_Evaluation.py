@@ -10,7 +10,6 @@ def getCleanText(text,toTranslate):
     if toTranslate == True:
         translation = translate.translate(text)['translation']
     temp = translation.replace(r'<.*?>','').replace('♪','').replace('#','').split()
-    print(temp)
     if temp[0] == '–' or temp[0][-1] == ':':
         return ' '.join(temp[1:])
     return ' '.join(temp)
