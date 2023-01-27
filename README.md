@@ -162,8 +162,8 @@ where filename is the name of the file wihtout extension.
 </ul>
 <p>The second format shows if subtitles have equal ammount of speakers:</p>
 <ul>
-  <li>a - index of english subtitle in folder "MT_Test_Data/Common". -1 if speasker ammount is fine.</li>
-  <li>b - index of latvian subtitle in folder "MT_Test_Data/Common". -1 if speasker ammount is fine.</li>
+  <li>a - index of english subtitle in folder "MT_Test_Data/Common". -1 if speaker amount is fine.</li>
+  <li>b - index of latvian subtitle in folder "MT_Test_Data/Common". -1 if speaker amount is fine.</li>
 </ul>
 <p>These mistakes need to be fixed manually and should be done to subtitles in "MT_Test_Data/Validated" folder. After that, run these files from VS code:</p>
 <ol>
