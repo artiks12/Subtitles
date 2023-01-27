@@ -142,10 +142,39 @@ where filename is the name of the file wihtout extension.
 <p>Click "Run python file" for file MT_Evaluation.py in root folder with VS code. Evaluation data will be saved in "MT_Evaluation" folder (see file structure).</p>
 
 ## Preparing test data for MT evaluation
+<p>All test data used for evaluation in this work is already made and stored in neccessary folders (see File Structure). This guide shows how to add test data.</p>
 <p>Put subtitle files in "MT_test_data/Original" folder and click "Run python file" for all listed python files in given order:</p>
 <ol>
 <li>Validation.py</li>
 <li>Segmentation.py</li>
 <li>Second.py</li>
+<li>Equal.py</li>
+<li>Segmentation.py</li>
+<li>Second.py</li>
 </ol>
-<p>Run the equal.py program the same way to check whether reference and hypotheses have equal amount of data and whether it is correct. If any of the test cases print out the number 0 then test data is correct.</p>
+<p>Run the equal.py program the same way again to check whether reference and hypotheses have equal amount of data and whether it is correct. If any of the test cases print out the number 0 then test data is correct. If not then on console will be written subtitles that need to be fixed. There will be two types of outputs for each subtitle. The first format shows if subtitles have equal ammount of lines:</p>
+<p>[a,b,c,d], where</p>
+<ul>
+  <li>a - index of subtitle in folder "MT_Test_Data/Common"</li>
+  <li>b - difference between english line count and latvian line count</li>
+  <li>c - index of english subtitle in folder "MT_Test_Data/Validated"</li>
+  <li>d - index of latvian subtitle in folder "MT_Test_Data/Validated"</li>
+</ul>
+<p>The second format shows if subtitles have equal ammount of speakers:</p>
+<ul>
+  <li>a - index of english subtitle in folder "MT_Test_Data/Common". -1 if speasker ammount is fine.</li>
+  <li>b - index of latvian subtitle in folder "MT_Test_Data/Common". -1 if speasker ammount is fine.</li>
+</ul>
+<p>These mistakes need to be fixed manually and should be done to subtitles in "MT_Test_Data/Validated" folder. After that, run these files from VS code:</p>
+<ol>
+<li>Segmentation.py</li>
+<li>Second.py</li>
+<li>Equal.py</li>
+</ol>
+<p>After that is done run "CheckWholeSentences.py" file to check combined sentences. There are three outputs for each subtitle sentences possible:
+<ul>
+  <li>0 - sentences are equal between hypotheses and reference</li>
+  <li>1 - there are equal ammount of sentences but some sentences are not equally combined.</li>
+  <li>2 - amount of sentences are not equal.</li>
+</ul>
+<p>If output is 1 or 2 then it will also print indexes where sentence files in "MT_Test_Data/Segmentated" folder are incorrect. Make adjustments to subtitles in "MT_Test_Data/Validated" folder and remake files in "MT_Test_Data/Segmentated" folder.</p>
