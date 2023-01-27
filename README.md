@@ -161,6 +161,7 @@ where filename is the name of the file wihtout extension.
   <li>d - index of latvian subtitle in folder "MT_Test_Data/Validated"</li>
 </ul>
 <p>The second format shows if subtitles have equal ammount of speakers:</p>
+<p>[a,b], where</p>
 <ul>
   <li>a - index of english subtitle in folder "MT_Test_Data/Common". -1 if speaker amount is fine.</li>
   <li>b - index of latvian subtitle in folder "MT_Test_Data/Common". -1 if speaker amount is fine.</li>
